@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Glassmorphism Portfolio | Anmol Singh</title>
+  <!-- Font Awesome (For Icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* CSS for page transition */
+    body {
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+    body.fade-in {
+      opacity: 1;
+    }
+    body.fade-out {
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="#" class="logo">Portfolio</a>
+      <nav>
+        <a href="#" class="nav-link">Portfolio</a>
+        <a href="#" class="nav-link">Home</a>
+        <a href="aboutme.html" class="nav-link">About</a>
+      </nav>
+    </header>
+    <section class="home">
+      <div class="hero-text">
+        <h1>Anmol Singh</h1>
+        <h2>Versatile Software Developer</h2>
+        <p>Hello! I'm Anmol Singh, a passionate software developer and MCA student at Amity University. I build efficient, scalable, and user-friendly applications using Python, Java, C++, HTML, CSS, and JavaScript, with experience in Git, GitHub, and game development.</p>
+        <div class="social-container">
+          <div class="social-icons">
+            <!-- LinkedIn link added here -->
+            <a href="https://www.linkedin.com/in/anmol-singh-1169852b4/" target="_blank"><i class="fab fa-linkedin"></i></a>
+            <!-- GitHub link added here -->
+            <a href="https://github.com/AnmolSingh1324" target="_blank"><i class="fab fa-github"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="hero-img">
+        <div class="img-box">
+          <img src="Profile.png" alt="Anmol Singh Profile Picture" />
+          <div class="overlay"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Add fade-in class to body when the page loads
+    document.addEventListener("DOMContentLoaded", () => {
+      document.body.classList.add("fade-in");
+    });
+
+    // Handle navigation links for fade-out effect
+    document.querySelectorAll(".nav-link").forEach(link => {
+      link.addEventListener("click", (e) => {
+        const href = link.getAttribute("href");
+        // Prevent default navigation for external links or if href is just '#'
+        if (href && href !== "#" && !href.startsWith("http")) {
+          e.preventDefault(); // Stop default link behavior
+          document.body.classList.remove("fade-in");
+          document.body.classList.add("fade-out");
+
+          // Navigate to the new page after the transition
+          setTimeout(() => {
+            window.location.href = href;
+          }, 500); // Match this duration with the CSS transition duration
+        }
+      });
+    });
+  </script>
+</body>
+</html>

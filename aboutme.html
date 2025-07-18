@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Me | Anmol Singh</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome (For Icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for glassmorphism effect and background */
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh; /* Keep min-height for initial full-page display */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Align content to start, allowing it to push down */
+            color: #e0e0e0; /* Light text color for contrast */
+            padding: 2.5rem 1rem; /* Add padding to body */
+            /* Removed overflow: hidden; to allow scrolling */
+            position: relative; /* For positioning canvas */
+            background-color: #1a202c; /* Dark fallback background for particles */
+
+            /* CSS for page transition */
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        body.fade-in {
+            opacity: 1;
+        }
+        body.fade-out {
+            opacity: 0;
+        }
+
+        /* Canvas for animation */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Send it to the back */
+            background-color: #1a202c; /* Background color for particles, overrides body fallback */
+        }
+
+        /* Ensure content is above the canvas */
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+            /* Removed min-height: 100vh; to allow content to dictate height */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* Removed justify-content: center; as body now handles vertical alignment */
+            padding: 2.5rem 1rem; /* py-10 px-4 */
+            width: 100%; /* Ensure wrapper takes full width */
+            box-sizing: border-box; /* Include padding in width/height calculation */
+        }
+
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.03); /* Even more subtle track */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15); /* More subtle thumb */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Glassmorphism effect for containers */
+        .glass-container {
+            background: rgba(255, 255, 255, 0.05); /* Even less opaque for a lighter feel */
+            backdrop-filter: blur(15px); /* Increased blur for smoother effect */
+            -webkit-backdrop-filter: blur(15px); /* Safari support */
+            border: 1px solid rgba(255, 255, 255, 0.1); /* Very subtle border */
+            box-shadow: 0 8px 30px 0 rgba(0, 0, 0, 0.3); /* Slightly larger, softer shadow */
+            transition: all 0.4s ease-in-out; /* Smoother transitions */
+        }
+
+        .glass-container:hover {
+            transform: translateY(-5px) scale(1.005); /* Subtle lift and slight scale */
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4); /* Enhanced shadow on hover */
+        }
+
+        /* Style for social icons */
+        .social-icon-circle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px; /* Slightly larger touch target */
+            height: 48px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.2); /* Softer border */
+            color: #fff;
+            font-size: 1.4rem; /* Slightly larger icon */
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+            background: rgba(255, 255, 255, 0.05); /* Light background */
+        }
+
+        .social-icon-circle:hover {
+            background: rgba(255, 255, 255, 0.1); /* Subtle background on hover */
+            transform: translateY(-3px) scale(1.08); /* More pronounced hover */
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.4); /* Slightly more visible border */
+        }
+
+        /* Style for call to action button */
+        .cta-button {
+            background: linear-gradient(45deg, #4a00e0 0%, #8e2de2 100%); /* Refined vibrant gradient */
+            color: white;
+            padding: 1.1rem 3rem; /* Slightly larger padding */
+            border-radius: 9999px; /* Fully rounded */
+            font-weight: 600;
+            font-size: 1.15rem; /* Slightly larger font */
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4); /* Softer, larger shadow */
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+            letter-spacing: 0.05em; /* Slight letter spacing */
+        }
+
+        .cta-button:hover {
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 18px 35px rgba(0, 0, 0, 0.5);
+            filter: brightness(1.15); /* Slightly brighter on hover */
+        }
+
+        /* Skill and Tool Badges */
+        .skill-badge, .tool-badge {
+            background: rgba(255, 255, 255, 0.08); /* Lighter glass background */
+            color: #c0c0c0; /* Softer text color */
+            padding: 0.75rem 1.5rem; /* More generous padding */
+            border-radius: 25px; /* More rounded corners */
+            font-weight: 500; /* Medium weight */
+            font-size: 0.95rem; /* Slightly smaller font for minimalism */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+            transition: all 0.2s ease-in-out;
+            border: 1px solid rgba(255, 255, 255, 0.05); /* Very subtle border */
+        }
+
+        .skill-badge:hover, .tool-badge:hover {
+            background: rgba(255, 255, 255, 0.15); /* More visible on hover */
+            color: #ffffff; /* White text on hover */
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Profile Image */
+        .profile-image {
+            border-color: rgba(142, 45, 226, 0.7); /* Matches CTA button gradient */
+            box-shadow: 0 0 0 6px rgba(142, 45, 226, 0.3), 0 10px 20px rgba(0, 0, 0, 0.4); /* Multi-layer shadow */
+        }
+
+        .profile-image:hover {
+            transform: scale(1.05); /* Slightly less aggressive scale */
+            box-shadow: 0 0 0 8px rgba(142, 45, 226, 0.5), 0 15px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Education Cards */
+        .education-card {
+            background: rgba(255, 255, 255, 0.06); /* Slightly different glass background */
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .education-card:hover {
+            transform: translateY(-8px); /* More pronounced lift */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Header Navigation */
+        .header-nav-link {
+            position: relative;
+            padding-bottom: 4px; /* Space for underline */
+        }
+
+        .header-nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #8e2de2; /* Accent color */
+            transition: width 0.3s ease-in-out;
+        }
+
+        .header-nav-link:hover::after {
+            width: 100%;
+        }
+
+        .header-nav-link.active::after {
+            width: 100%; /* Always active for current page */
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Canvas for the animated background -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Main Content Wrapper -->
+    <div class="content-wrapper">
+        <!-- Main Container with Glassmorphism Effect -->
+        <div class="glass-container rounded-3xl p-8 md:p-12 lg:p-16 max-w-xl sm:max-w-2xl md:max-w-4xl lg:max-w-6xl w-full my-10">
+
+            <!-- Header Section -->
+            <header class="flex flex-col sm:flex-row justify-between items-center mb-12 w-full">
+                <a href="index.html" class="text-4xl font-extrabold text-white mb-4 sm:mb-0 hover:text-purple-300 transition-colors duration-300">Anmol Singh</a>
+                <nav class="flex gap-8 text-lg">
+                    <a href="#" class="text-white hover:text-purple-300 transition-colors duration-200 header-nav-link">Portfolio</a>
+                    <a href="index.html" class="text-white hover:text-purple-300 transition-colors duration-200 header-nav-link">Home</a>
+                    <a href="aboutme.html" class="text-purple-300 font-semibold header-nav-link active">About</a> <!-- Highlight current page -->
+                </nav>
+            </header>
+
+            <!-- About Me Content -->
+            <div class="text-center mb-12">
+                <h1 class="text-6xl md:text-7xl font-extrabold text-white mb-4 tracking-tight leading-tight">
+                    About Me
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-300 font-light max-w-2xl mx-auto">
+                    A passionate learner and developer, constantly building and exploring.
+                </p>
+            </div>
+
+            <!-- Profile Introduction Section -->
+            <section class="flex flex-col md:flex-row items-center md:items-start gap-10 mb-16">
+                <div class="flex-shrink-0">
+                    <!-- Placeholder for profile image -->
+                    <img src="https://placehold.co/200x200/8e2de2/FFFFFF?text=Profile"
+                         alt="Profile Picture"
+                         class="w-48 h-48 md:w-56 md:h-56 rounded-full object-cover profile-image transition-transform duration-300">
+                </div>
+                <div class="text-center md:text-left">
+                    <h2 class="text-4xl font-bold text-white mb-5">Hello There!</h2>
+                    <p class="text-lg text-gray-200 leading-relaxed max-w-prose">
+                        I'm Anmol Singh, currently pursuing my Master of Computer Applications (MCA) at Amity University. My journey in technology began with a Bachelor of Computer Applications (BCA) from Regional College Bareilly, where I cultivated a strong foundation in core computer science principles. I thrive on solving complex problems and am constantly exploring new technologies to build impactful solutions. My passion lies in creating efficient, scalable, and user-friendly applications.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Education Section -->
+            <section class="mb-16">
+                <h2 class="text-4xl font-bold text-white mb-8 text-center">Education</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- MCA Card -->
+                    <div class="glass-container p-7 rounded-2xl shadow-md flex items-start gap-5 education-card transform transition-transform duration-300">
+                        <span class="text-purple-300 text-4xl">🎓</span>
+                        <div>
+                            <h3 class="text-2xl font-semibold text-white mb-1">Master of Computer Applications (MCA)</h3>
+                            <p class="text-gray-300 text-lg">Amity University</p>
+                            <p class="text-sm text-gray-400 mt-1">Currently Pursuing</p>
+                        </div>
+                    </div>
+                    <!-- BCA Card -->
+                    <div class="glass-container p-7 rounded-2xl shadow-md flex items-start gap-5 education-card transform transition-transform duration-300">
+                        <span class="text-purple-300 text-4xl">📚</span>
+                        <div>
+                            <h3 class="text-2xl font-semibold text-white mb-1">Bachelor of Computer Applications (BCA)</h3>
+                            <p class="text-gray-300 text-lg">Regional College Bareilly</p>
+                            <p class="text-sm text-gray-400 mt-1">Completed</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Skills Section -->
+            <section class="mb-16">
+                <h2 class="text-4xl font-bold text-white mb-8 text-center">Technical Skills</h2>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <!-- Skill Badges -->
+                    <span class="skill-badge flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                        Python
+                    </span>
+                    <span class="skill-badge flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                        Java
+                    </span>
+                    <span class="skill-badge flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                        C++
+                    </span>
+                    <span class="skill-badge flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                        HTML
+                    </span>
+                    <span class="skill-badge flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                        CSS
+                    </span>
+                    <span class="skill-badge flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                        JavaScript
+                    </span>
+                    <span class="skill-badge flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                        Unity Hub
+                    </span>
+                    <span class="skill-badge flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                        Unreal Engine
+                    </span>
+                </div>
+            </section>
+
+            <!-- Tools Section -->
+            <section class="mb-16">
+                <h2 class="text-4xl font-bold text-white mb-8 text-center">Tools</h2>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <!-- Tool Badges -->
+                    <span class="tool-badge flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m7 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2v-7m-4 0H3"></path></svg>
+                        Git
+                    </span>
+                    <span class="tool-badge flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m7 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2v-7m-4 0H3"></path></svg>
+                        GitHub
+                    </span>
+                    <span class="tool-badge flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m7 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2v-7m-4 0H3"></path></svg>
+                        Postman
+                    </span>
+                    <span class="tool-badge flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m7 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2v-7m-4 0H3"></path></svg>
+                        VS Code
+                    </span>
+                    <span class="tool-badge flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m7 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2v-7m-4 0H3"></path></svg>
+                        PyCharm
+                    </span>
+                </div>
+            </section>
+
+            <!-- Call to Action / Contact -->
+            <section class="text-center mt-16">
+                <h2 class="text-4xl font-bold text-white mb-6">Let's Connect!</h2>
+                <p class="text-lg text-gray-200 mb-8 max-w-xl mx-auto">
+                    I'm always open to new opportunities, collaborations, and interesting discussions. Feel free to reach out!
+                </p>
+                <div class="flex justify-center gap-8 mb-8">
+                    <!-- LinkedIn link -->
+                    <a href="https://www.linkedin.com/in/anmol-singh-1169852b4/" target="_blank" class="social-icon-circle">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <!-- GitHub link -->
+                    <a href="https://github.com/AnmolSingh1324" target="_blank" class="social-icon-circle">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+                <a href="#" class="cta-button">
+                    Get in Touch
+                </a>
+            </section>
+
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-12 text-center text-gray-500 text-sm">
+            <p>&copy; 2025 Anmol Singh. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Get the canvas element and its 2D rendering context
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Array to store particle objects
+        const particles = [];
+        // Number of particles to generate
+        const numParticles = 100;
+
+        // Particle class definition
+        class Particle {
+            constructor(x, y) {
+                this.x = x; // X-coordinate of the particle
+                this.y = y; // Y-coordinate of the particle
+                this.size = Math.random() * 3 + 1; // Random size between 1 and 4
+                this.speedX = Math.random() * 0.5 - 0.25; // Random horizontal speed (-0.25 to 0.25)
+                this.speedY = Math.random() * 0.5 - 0.25; // Random vertical speed (-0.25 to 0.25)
+                this.color = 'rgba(255, 255, 255, ' + (Math.random() * 0.5 + 0.2) + ')'; // Semi-transparent white
+            }
+
+            // Method to update particle's position
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                // If particle goes off-screen, reset its position to the opposite side
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+
+            // Method to draw the particle
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); // Draw a circle
+                ctx.fill();
+            }
+        }
+
+        // Function to initialize particles
+        function init() {
+            // Set canvas dimensions to fill the window
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            // Clear existing particles and create new ones
+            particles.length = 0; // Clear the array
+            for (let i = 0; i < numParticles; i++) {
+                // Create particles at random positions within the canvas
+                particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height));
+            }
+        }
+
+        // Function to animate particles
+        function animate() {
+            // Clear the entire canvas for the next frame
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Update and draw each particle
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+
+                // Draw lines between nearby particles
+                for (let j = i; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    // If particles are close enough, draw a line between them
+                    if (distance < 100) { // Line connection distance
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${1 - (distance / 100)})`; // Fades with distance
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            // Request the next animation frame
+            requestAnimationFrame(animate);
+        }
+
+        // Initialize particles and start animation when the window loads
+        window.onload = function() {
+            init();
+            animate();
+        };
+
+        // Re-initialize particles and resize canvas when the window is resized
+        window.addEventListener('resize', init);
+
+        // Add fade-in class to body when the page loads
+        document.addEventListener("DOMContentLoaded", () => {
+            document.body.classList.add("fade-in");
+        });
+
+        // Handle navigation links for fade-out effect
+        document.querySelectorAll(".header-nav-link").forEach(link => {
+            link.addEventListener("click", (e) => {
+                const href = link.getAttribute("href");
+                // Prevent default navigation for external links or if href is just '#'
+                if (href && href !== "#" && !href.startsWith("http")) {
+                    e.preventDefault(); // Stop default link behavior
+                    document.body.classList.remove("fade-in");
+                    document.body.classList.add("fade-out");
+
+                    // Navigate to the new page after the transition
+                    setTimeout(() => {
+                        window.location.href = href;
+                    }, 500); // Match this duration with the CSS transition duration
+                }
+            });
+        });
+    </script>
+</body>
+</html>
