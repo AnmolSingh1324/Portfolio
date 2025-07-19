@@ -9,24 +9,29 @@
   font-family: "Poppins", serif;
 }
 
-body{
+body {
   height: 100vh;
   background: url(animation_file_final.gif) no-repeat center center fixed;
   background-size: cover;
   background-position: center;
-  padding: 50px 5%;
+  padding: 50px 5%; /* Default padding for larger screens */
 }
 
-.container{
+.container {
   position: relative;
   height: 100%;
   background-color: rgba(255, 255, 255, 0.1);
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 20px;
   backdrop-filter: blur(40px);
+  display: flex; /* Use flexbox for container to center content */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* Hide overflow to prevent horizontal scroll */
 }
 
-header{
+header {
   position: absolute;
   top: 0;
   left: 0;
@@ -36,56 +41,74 @@ header{
   align-items: center;
   justify-content: space-between;
   z-index: 100;
+  flex-wrap: wrap; /* Allow header items to wrap on smaller screens */
 }
 
-a.logo{
+a.logo {
   font-size: 25px;
   font-weight: 500;
   color: #fff;
 }
 
-nav a{
+nav {
+  display: flex; /* Make nav a flex container */
+  flex-wrap: wrap; /* Allow nav items to wrap */
+  justify-content: flex-end; /* Align nav items to the right */
+}
+
+nav a {
   font-size: 18px;
   font-weight: 500;
   color: #fff;
   margin-left: 30px;
   border-bottom: 3px solid transparent;
   transition: 0.5s;
+  white-space: nowrap; /* Prevent links from breaking */
 }
 
-nav a:hover{
+nav a:hover {
   border-color: #fff;
 }
 
-.home{
+.home {
   display: flex;
   align-items: center;
   height: 100%;
   gap: 50px;
   padding: 50px 5% 0;
   color: #486121;
+  flex-wrap: wrap; /* Allow items to wrap */
+  justify-content: center; /* Center items horizontally */
+  text-align: left; /* Default text alignment */
 }
 
-.hero-text h1{
+.hero-text {
+  flex: 1; /* Allow hero-text to take available space */
+  min-width: 300px; /* Minimum width before wrapping */
+}
+
+.hero-text h1 {
   font-size: 55px;
   line-height: 1;
 }
 
-.hero-text h2{
+.hero-text h2 {
   font-size: 32px;
 }
 
-.hero-text p{
+.hero-text p {
   margin: 10px 0 20px;
   max-width: 600px;
 }
 
-.social-container{
+.social-container {
   display: flex;
   align-items: center;
+  justify-content: center; /* Center social icons */
+  width: 100%; /* Take full width on smaller screens */
 }
 
-.btn{
+.btn {
   display: inline-block;
   padding: 10px 30px;
   background-color: #fff;
@@ -97,17 +120,20 @@ nav a:hover{
   transition: 0.5s;
 }
 
-.btn:hover{
+.btn:hover {
   background: transparent;
   color: #fff;
   box-shadow: none;
 }
 
-.social-icons{
+.social-icons {
   margin-left: 20px;
+  display: flex; /* Make social icons a flex container */
+  justify-content: center; /* Center icons within their container */
+  flex-wrap: wrap; /* Allow icons to wrap */
 }
 
-.social-icons a{
+.social-icons a {
   display: inline-flex;
   padding: 8px;
   border: 2px solid #fff;
@@ -118,28 +144,115 @@ nav a:hover{
   transition: 0.5s;
 }
 
-.social-icons a:hover{
+.social-icons a:hover {
   background-color: #fff;
   box-shadow: 0 0 10px #fff;
   color: #333;
 }
 
-.img-box{
+.img-box {
   position: relative;
-  width: 23vw;
+  width: 23vw; /* Use viewport width for responsiveness */
   height: 23vw;
-  left: 160px;
-  top: 20px;
+  left: 0; /* Reset left position for responsiveness */
+  top: 0; /* Reset top position for responsiveness */
   overflow: hidden;
   border: 2px solid #fff;
   border-radius: 50%;
   display: flex;
   justify-content: center;
+  align-items: center; /* Center image vertically */
   box-shadow: 0 0 20px #fff;
+  margin: 20px auto; /* Center image horizontally with margin */
+  flex-shrink: 0; /* Prevent image from shrinking too much */
 }
 
-.img-box img{
+.img-box img {
   position: absolute;
   width: 82%;
   display: block;
+  height: auto; /* Maintain aspect ratio */
+}
+
+/* Media Queries for Responsiveness */
+
+/* For screens smaller than 768px (tablets and phones) */
+@media (max-width: 768px) {
+  body {
+    padding: 20px 3%; /* Reduce padding */
+  }
+
+  header {
+    flex-direction: column; /* Stack header items */
+    align-items: center; /* Center header items */
+    padding: 15px 3%;
+  }
+
+  nav {
+    margin-top: 15px; /* Add space between logo and nav */
+    justify-content: center; /* Center nav links */
+  }
+
+  nav a {
+    margin: 0 10px 10px; /* Adjust margin for stacked links */
+    font-size: 16px;
+  }
+
+  .home {
+    flex-direction: column; /* Stack hero-text and hero-img */
+    text-align: center; /* Center text for portrait view */
+    padding: 20px 3% 0;
+    height: auto; /* Allow height to adjust based on content */
+  }
+
+  .hero-text h1 {
+    font-size: 40px; /* Smaller font size for h1 */
+  }
+
+  .hero-text h2 {
+    font-size: 28px; /* Smaller font size for h2 */
+  }
+
+  .hero-text p {
+    font-size: 14px; /* Smaller font size for paragraph */
+    max-width: 90%; /* Adjust max-width for smaller screens */
+    margin: 10px auto 20px; /* Center paragraph */
+  }
+
+  .img-box {
+    width: 50vw; /* Larger image on smaller screens */
+    height: 50vw;
+    margin-top: 30px; /* Add space above image */
+  }
+
+  .social-container {
+    flex-direction: column; /* Stack button and social icons */
+    margin-top: 20px;
+  }
+
+  .social-icons {
+    margin-left: 0; /* Reset margin */
+    margin-top: 15px; /* Add space above social icons */
+  }
+}
+
+/* For screens smaller than 480px (smaller phones) */
+@media (max-width: 480px) {
+  .hero-text h1 {
+    font-size: 35px;
+  }
+
+  .hero-text h2 {
+    font-size: 24px;
+  }
+
+  nav a {
+    font-size: 14px;
+    margin: 0 8px 8px;
+  }
+
+  .img-box {
+    width: 60vw; /* Even larger image on very small screens */
+    height: 60vw;
+  }
 }
